@@ -1,19 +1,55 @@
-const supportedSites = [
-    "*.amazon.com",
-    "*.amazon.ca",
-    "*.amazon.in",
-    "*.bestbuy.com",
-    "*.doordash.com",
-    "*.ubereats.com",
-    "*.flipkart.com",
-    "*.ebay.com",
-    "*.target.com",
-    "*.walmart.com",
-    "*.etsy.com",
-    "*.costco.com",
-    "*.shein.com",
-    "*.myntra.com"
-];
+const supportedSitesByCountry = {
+    USA: [
+        { name: "Amazon (.com)", hostname: "amazon.com" },
+        { name: "Best Buy", hostname: "bestbuy.com" },
+        { name: "DoorDash", hostname: "doordash.com" },
+        { name: "Uber Eats", hostname: "ubereats.com" },
+        { name: "Target", hostname: "target.com" },
+        { name: "Walmart", hostname: "walmart.com" },
+        { name: "Etsy", hostname: "etsy.com" },
+        { name: "Costco", hostname: "costco.com" },
+        { name: "Shein", hostname: "shein.com" },
+        { name: "Macy's", hostname: "macys.com" },
+        { name: "Kohl's", hostname: "kohls.com" },
+        { name: "Home Depot", hostname: "homedepot.com" },
+        { name: "Lowe's", hostname: "lowes.com" },
+        { name: "Wayfair", hostname: "wayfair.com" },
+        { name: "Nordstrom", hostname: "nordstrom.com" },
+        { name: "Zappos", hostname: "zappos.com" },
+        { name: "eBay", hostname: "ebay.com" },
+        { name: "Staples", hostname: "staples.com" },
+    ],
+    India: [
+        { name: "Amazon (.in)", hostname: "amazon.in" },
+        { name: "Flipkart", hostname: "flipkart.com" },
+        { name: "Myntra", hostname: "myntra.com" },
+        { name: "Zomato", hostname: "zomato.com" },
+        { name: "Swiggy", hostname: "swiggy.com" },
+        { name: "BigBasket", hostname: "bigbasket.com" },
+        { name: "Nykaa", hostname: "nykaa.com" },
+        { name: "BookMyShow", hostname: "bookmyshow.com" },
+    ],
+    Canada: [
+        { name: "Amazon (.ca)", hostname: "amazon.ca" },
+        { name: "Best Buy (.ca)", hostname: "bestbuy.ca" },
+        { name: "Home Depot", hostname: "homedepot.ca" },
+        { name: "DoorDash", hostname: "doordash.com" },
+        { name: "Uber Eats (.ca)", hostname: "ubereats.com/ca" },
+        { name: "Walmart (.ca)", hostname: "walmart.ca" },
+        { name: "Etsy (.ca)", hostname: "etsy.com/ca" },
+        { name: "Costco (.ca)", hostname: "costco.ca" },
+        { name: "Indigo", hostname: "indigo.ca" },
+        { name: "SportChek", hostname: "sportchek.ca" },
+        { name: "Canadian Tire", hostname: "canadiantire.ca" },
+        { name: "Hudson's Bay", hostname: "thebay.com" },
+        { name: "Staples", hostname: "staples.ca" },
+    ],
+};
+
+// Generate the supportedSites array dynamically
+const supportedSites = Object.values(supportedSitesByCountry)
+    .flat()
+    .map((site) => `*.${site.hostname}`);
 
 // Initialize default spending data
 chrome.runtime.onInstalled.addListener(() => {
