@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Access Blocked</title>
+  <link rel="stylesheet" href="blocked.css">
 </head>
 <body>
-  <h1>Sorry, you've exceeded your spending limit!</h1>
-  <p>Come back tomorrow.</p>
+  <div class="container">
+    <div class="card">
+      <h1>🚫 Spending Limit Exceeded!</h1>
+      <p>Oops! You've gone over your limit for this website.</p>
+      <p class="hint">Take a break and try again tomorrow!</p>
+      <button id="close-tab-btn">Close Tab</button>
+    </div>
+  </div>
+  <script src="blocked.js"></script>
 </body>
 </html>

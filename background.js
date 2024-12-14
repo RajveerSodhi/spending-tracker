@@ -169,3 +169,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
     }
 });
+
+// background.js
+
+chrome.runtime.onMessage.addListener((message, sender) => {
+    if (message.action === "closeCurrentTab" && sender.tab) {
+      chrome.tabs.remove(sender.tab.id, () => {
+        console.log(`Closed tab with ID: ${sender.tab.id}`);
+      });
+    }
+  });
