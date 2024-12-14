@@ -1,5 +1,7 @@
 const supportedSites = [
-    { name: "Amazon", hostname: "amazon.com" },
+    { name: "Amazon (.com)", hostname: "amazon.com" },
+    { name: "Amazon (.ca)", hostname: "amazon.ca" },
+    { name: "Amazon (.in)", hostname: "amazon.in" },
     { name: "Best Buy", hostname: "bestbuy.com" },
     { name: "DoorDash", hostname: "doordash.com" },
     { name: "Uber Eats", hostname: "ubereats.com" },
@@ -46,6 +48,19 @@ chrome.storage.local.get(["spendingData", "favourites"], (result) => {
         websiteItem.appendChild(saveButton);
 
         if (favourites.includes(site.hostname)) {
+            const removeButton = document.createElement("button");
+            removeButton.className = "remove-btn";
+            removeButton.textContent = "Remove";
+            removeButton.addEventListener("click", () => {
+                const index = favourites.indexOf(site.hostname);
+                if (index !== -1) {
+                    favourites.splice(index, 1);
+                    chrome.storage.local.set({ favourites });
+                    alert(`${site.name} removed from favourites`);
+                    window.location.reload();
+                }
+            });
+            websiteItem.appendChild(removeButton);
             favouriteList.appendChild(websiteItem);
         } else {
             const addButton = document.createElement("button");
