@@ -67,93 +67,6 @@ const resetDailySpending = () => {
 setInterval(resetDailySpending, 60 * 60 * 1000); // Check every hour
 
 // Track spending when purchases are made
-chrome.webNavigation.onCompleted.addListener((details) => {
-    const url = new URL(details.url);
-    const hostname = url.hostname.replace("www.", "");
-
-    if (url.pathname.includes("/thank-you") || url.pathname.includes("/order-confirmation")) {
-        console.log(`Detected purchase completion on ${hostname}`);
-        chrome.storage.local.get(["spendingData"], (result) => {
-            const data = result.spendingData || {};
-            const siteData = data[hostname];
-            if (siteData) {
-                const amount = parseFloat(prompt(`Enter the amount spent on ${hostname}:`)) || 0;
-                console.log(`User entered amount: $${amount}`);
-                siteData.current += amount;
-                console.log(`Updated spending for ${hostname}:`, siteData);
-
-                if (siteData.current >= siteData.limit) {
-                    console.log(`${hostname} has exceeded its spending limit. Adding block rule.`);
-                    chrome.declarativeNetRequest.updateDynamicRules({
-                        addRules: [
-                            {
-                                id: hostname.length,
-                                priority: 1,
-                                action: {
-                                    type: "redirect",
-                                    redirect: { extensionPath: "/blocked.html" }
-                                },
-                                condition: {
-                                    urlFilter: hostname,
-                                    resourceTypes: ["main_frame"]
-                                }
-                            }
-                        ]
-                    });
-                }
-
-                chrome.storage.local.set({ spendingData: data }, () => {
-                    console.log("Spending data saved:", data);
-                });
-            } else {
-                console.log(`No spending data found for ${hostname}`);
-            }
-        });
-    }
-});
-
-// Unblock sites when the limit is updated
-chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === "local" && changes.spendingData) {
-        console.log("Spending data updated:", changes.spendingData.newValue);
-
-        const updatedData = changes.spendingData.newValue;
-
-        Object.keys(updatedData).forEach((site) => {
-            const siteData = updatedData[site];
-            const ruleId = site.length; // Unique rule ID based on site length
-
-            if (siteData.current < siteData.limit) {
-                console.log(`Spending is below limit for ${site}. Removing block rule.`);
-                chrome.declarativeNetRequest.updateDynamicRules({
-                    removeRuleIds: Array.from({ length: 100 }, (_, i) => i + 1)
-                }, () => {
-                    console.log(`Block rule removed for ${site}`);
-                });
-            } else {
-                console.log(`${site} is still over the limit. Keeping block rule.`);
-                chrome.declarativeNetRequest.updateDynamicRules({
-                    addRules: [
-                        {
-                            id: ruleId,
-                            priority: 1,
-                            action: {
-                                type: "redirect",
-                                redirect: { extensionPath: "/blocked.html" }
-                            },
-                            condition: {
-                                urlFilter: site,
-                                resourceTypes: ["main_frame"]
-                            }
-                        }
-                    ]
-                });
-            }
-        });
-    }
-});
-
-// Handle purchase recording
 chrome.runtime.onMessage.addListener((message, sender) => {
     if (message.action === "recordPurchase" && message.hostname) {
         const hostname = message.hostname;
@@ -203,12 +116,55 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     }
 });
 
-// background.js
+// Unblock sites when the limit is updated
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === "local" && changes.spendingData) {
+        console.log("Spending data updated:", changes.spendingData.newValue);
 
+        const updatedData = changes.spendingData.newValue;
+
+        Object.keys(updatedData).forEach((site) => {
+            const siteData = updatedData[site];
+            const ruleId = site.length; // Unique rule ID based on site length
+
+            if (siteData.current < siteData.limit) {
+                console.log(`Spending is below limit for ${site}. Removing block rule.`);
+                chrome.declarativeNetRequest.updateDynamicRules({
+                    removeRuleIds: [ruleId]
+                }, () => {
+                    console.log(`Block rule removed for ${site}`);
+                });
+            } else {
+                console.log(`${site} is still over the limit. Keeping block rule.`);
+                chrome.declarativeNetRequest.updateDynamicRules({
+                    addRules: [
+                        {
+                            id: ruleId,
+                            priority: 1,
+                            action: {
+                                type: "redirect",
+                                redirect: { extensionPath: "/blocked.html" }
+                            },
+                            condition: {
+                                urlFilter: site,
+                                resourceTypes: ["main_frame"]
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+    }
+});
+
+// Handle "Close Tab" action
 chrome.runtime.onMessage.addListener((message, sender) => {
     if (message.action === "closeCurrentTab" && sender.tab) {
-      chrome.tabs.remove(sender.tab.id, () => {
-        console.log(`Closed tab with ID: ${sender.tab.id}`);
-      });
+        chrome.tabs.remove(sender.tab.id, () => {
+            console.log(`Closed tab with ID: ${sender.tab.id}`);
+        });
     }
-  });
+});
+
+// Reset spending data regularly
+resetDailySpending(); // Ensure a reset happens when the extension starts
