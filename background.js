@@ -23,7 +23,7 @@ chrome.runtime.onInstalled.addListener(() => {
             console.log("No existing spending data. Setting defaults...");
             const initialData = {};
             supportedSites.forEach((site) => {
-                initialData[site] = { limit: 100, current: 0 }; // Default limits
+                initialData[site] = { limit: 9999999999999, current: 0 }; // Default limits
             });
             chrome.storage.local.set({ spendingData: initialData }, () => {
                 console.log("Default spending data set:", initialData);
