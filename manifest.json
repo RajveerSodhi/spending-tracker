@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Spending Tracker & Blocker",
+    "name": "PocketPause",
     "version": "1.0",
     "permissions": [
         "storage",
