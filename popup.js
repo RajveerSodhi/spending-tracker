@@ -1,4 +1,3 @@
-// Predefined websites and their limits
 const supportedSites = [
     { name: "Amazon", hostname: "amazon.com" },
     { name: "Best Buy", hostname: "bestbuy.com" },
@@ -15,14 +14,15 @@ const supportedSites = [
 ];
 
 // Load spending data and populate UI
-chrome.storage.local.get(["spendingData"], (result) => {
+chrome.storage.local.get(["spendingData", "favourites"], (result) => {
     const spendingData = result.spendingData || {};
-    const websiteList = document.getElementById("website-list");
+    const favourites = result.favourites || [];
+    const favouriteList = document.getElementById("favourites");
+    const otherList = document.getElementById("others");
 
     supportedSites.forEach((site) => {
         const siteData = spendingData[site.hostname] || { limit: 0, current: 0 };
 
-        // Create website item
         const websiteItem = document.createElement("div");
         websiteItem.className = "website-item";
 
@@ -45,6 +45,32 @@ chrome.storage.local.get(["spendingData"], (result) => {
         });
         websiteItem.appendChild(saveButton);
 
-        websiteList.appendChild(websiteItem);
+        if (favourites.includes(site.hostname)) {
+            favouriteList.appendChild(websiteItem);
+        } else {
+            const addButton = document.createElement("button");
+            addButton.className = "add-btn";
+            addButton.textContent = "+";
+            addButton.addEventListener("click", () => {
+                favourites.push(site.hostname);
+                chrome.storage.local.set({ favourites });
+                alert(`${site.name} added to favourites`);
+                window.location.reload();
+            });
+            websiteItem.appendChild(addButton);
+            otherList.appendChild(websiteItem);
+        }
     });
+});
+
+// Toggle dropdown visibility
+document.getElementById("toggle-dropdown").addEventListener("click", (e) => {
+    const dropdown = document.getElementById("dropdown-list");
+    if (dropdown.classList.contains("hidden")) {
+        dropdown.classList.remove("hidden");
+        e.target.textContent = "Hide More Websites";
+    } else {
+        dropdown.classList.add("hidden");
+        e.target.textContent = "Show More Websites";
+    }
 });

@@ -9,9 +9,22 @@
 <body>
     <div class="container">
         <h1>Spending Tracker</h1>
-        <p class="subtitle">Manage spending limits for supported websites</p>
-        <div id="website-list">
-            <!-- List of websites and controls will be dynamically injected here -->
+        <p class="subtitle">Manage your favourite websites and spending limits</p>
+        
+        <div id="favourite-list">
+            <h2>Favourites</h2>
+            <div id="favourites">
+                <!-- Favourite websites dynamically populated here -->
+            </div>
+        </div>
+
+        <button id="toggle-dropdown" class="dropdown-btn">Show More Websites</button>
+
+        <div id="dropdown-list" class="hidden">
+            <h2>Other Websites</h2>
+            <div id="others">
+                <!-- Non-favourite websites dynamically populated here -->
+            </div>
         </div>
     </div>
     <script src="popup.js"></script>
