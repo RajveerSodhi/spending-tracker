@@ -120,3 +120,52 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
         });
     }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "recordPurchase" && message.hostname) {
+        const hostname = message.hostname;
+        
+        // Fetch stored spending data
+        chrome.storage.local.get(["spendingData"], (result) => {
+            const spendingData = result.spendingData || {};
+            const siteData = spendingData[hostname];
+
+            if (siteData) {
+                // Prompt user to enter the amount spent
+                const amount = parseFloat(prompt(`Enter the amount spent on ${hostname}:`)) || 0;
+
+                // Update the spending for the site
+                siteData.current += amount;
+
+                // Check if spending exceeds the limit
+                if (siteData.current >= siteData.limit) {
+                    console.log(`${hostname} has exceeded its spending limit. Adding block rule.`);
+                    chrome.declarativeNetRequest.updateDynamicRules({
+                        addRules: [
+                            {
+                                id: hostname.length, // Use hostname length as a unique ID
+                                priority: 1,
+                                action: {
+                                    type: "redirect",
+                                    redirect: { extensionPath: "/blocked.html" }
+                                },
+                                condition: {
+                                    urlFilter: hostname,
+                                    resourceTypes: ["main_frame"]
+                                }
+                            }
+                        ]
+                    });
+                }
+
+                // Save updated spending data
+                spendingData[hostname] = siteData;
+                chrome.storage.local.set({ spendingData }, () => {
+                    console.log(`Updated spending data for ${hostname}:`, siteData);
+                });
+            } else {
+                console.log(`No spending data found for ${hostname}`);
+            }
+        });
+    }
+});
