@@ -67,7 +67,7 @@ function populateWebsites(country) {
         }
 
         supportedSites.forEach((site) => {
-            const siteData = spendingData[site.hostname] || { limit: 0, current: 0 };
+            const siteData = spendingData[site.hostname] || { limit: 9999999999999, current: 0 };
 
             const websiteItem = document.createElement("div");
             websiteItem.className = "website-item";
@@ -76,23 +76,25 @@ function populateWebsites(country) {
             info.className = "info";
             info.innerHTML = `
                 <span>${site.name}</span>
-                <span>Spent: $${siteData.current.toFixed(2)} / Limit: $<input class="limit-input" type="number" value="${siteData.limit}" data-hostname="${site.hostname}" /></span>
+                ${favourites.includes(site.hostname) ? `
+                <span>Spent: $${siteData.current.toFixed(2)} / Limit: $<input class="limit-input" type="number" value="${siteData.limit}" data-hostname="${site.hostname}" /></span>` 
+                : ""}
             `;
             websiteItem.appendChild(info);
 
-            const saveButton = document.createElement("button");
-            saveButton.className = "save-btn";
-            saveButton.textContent = "Save";
-            saveButton.addEventListener("click", () => {
-                const newLimit = parseFloat(info.querySelector(".limit-input").value) || 0;
-                spendingData[site.hostname] = { ...siteData, limit: newLimit };
-                chrome.storage.local.set({ spendingData }, () => {
-                    alert(`${site.name} limit updated to $${newLimit}`);
-                });
-            });
-            websiteItem.appendChild(saveButton);
-
             if (favourites.includes(site.hostname)) {
+                const saveButton = document.createElement("button");
+                saveButton.className = "save-btn";
+                saveButton.textContent = "Save";
+                saveButton.addEventListener("click", () => {
+                    const newLimit = parseFloat(info.querySelector(".limit-input").value) || 0;
+                    spendingData[site.hostname] = { ...siteData, limit: newLimit };
+                    chrome.storage.local.set({ spendingData }, () => {
+                        alert(`${site.name} limit updated to $${newLimit}`);
+                    });
+                });
+                websiteItem.appendChild(saveButton);
+
                 const removeButton = document.createElement("button");
                 removeButton.className = "remove-btn";
                 removeButton.textContent = "Remove";
@@ -100,13 +102,15 @@ function populateWebsites(country) {
                     const index = favourites.indexOf(site.hostname);
                     if (index !== -1) {
                         favourites.splice(index, 1);
-                        chrome.storage.local.set({ favourites }, () => {
+                        spendingData[site.hostname] = { ...siteData, limit: 9999999999999 }; // Reset limit to default
+                        chrome.storage.local.set({ favourites, spendingData }, () => {
                             alert(`${site.name} removed from favourites`);
                             populateWebsites(country);
                         });
                     }
                 });
                 websiteItem.appendChild(removeButton);
+
                 favouriteList.appendChild(websiteItem);
             } else {
                 const addButton = document.createElement("button");
