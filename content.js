@@ -1,9 +1,10 @@
 // Define patterns for order confirmation paths for different websites
 const orderConfirmationPaths = [
-    "/thank-you", // Amazon, etc.
-    "/order-confirmation", // Best Buy, etc.
-    "/order-summary", // Flipkart, etc.
-    "/confirmation" // Uber Eats, DoorDash, etc.
+    "/thankyou",
+    "/thank-you",
+    "/order-confirmation",
+    "/order-summary",
+    "/confirmation"
 ];
 
 // Check if the current URL matches any of the order confirmation paths
