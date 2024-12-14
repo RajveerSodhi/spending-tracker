@@ -23,7 +23,7 @@ const supportedSitesByCountry = {
         { name: "Amazon (.in)", hostname: "amazon.in" },
         { name: "Flipkart", hostname: "flipkart.com" },
         { name: "Myntra", hostname: "myntra.com" },
-        { name: "Zomato", hostname: "zomato.com" }, 
+        { name: "Zomato", hostname: "zomato.com" },
         { name: "Swiggy", hostname: "swiggy.com" },
         { name: "BigBasket", hostname: "bigbasket.com" },
         { name: "Nykaa", hostname: "nykaa.com" },
@@ -60,6 +60,11 @@ function populateWebsites(country) {
 
         // Get supported sites for the selected country
         const supportedSites = supportedSitesByCountry[country] || [];
+
+        // Handle empty favorites
+        if (favourites.length === 0) {
+            favouriteList.innerHTML = "<p>No limits set. Select websites below to manage spending limits.</p>";
+        }
 
         supportedSites.forEach((site) => {
             const siteData = spendingData[site.hostname] || { limit: 0, current: 0 };
@@ -106,7 +111,7 @@ function populateWebsites(country) {
             } else {
                 const addButton = document.createElement("button");
                 addButton.className = "add-btn";
-                addButton.textContent = "+";
+                addButton.textContent = "Add";
                 addButton.addEventListener("click", () => {
                     favourites.push(site.hostname);
                     chrome.storage.local.set({ favourites }, () => {
