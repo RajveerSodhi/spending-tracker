@@ -1,6 +1,6 @@
 const supportedSitesByCountry = {
     USA: [
-        { name: "Amazon (.com)", hostname: "amazon.com" },
+        { name: "Amazon", hostname: "amazon.com" },
         { name: "Best Buy", hostname: "bestbuy.com" },
         { name: "DoorDash", hostname: "doordash.com" },
         { name: "Uber Eats", hostname: "ubereats.com" },
@@ -13,33 +13,28 @@ const supportedSitesByCountry = {
         { name: "Kohl's", hostname: "kohls.com" },
         { name: "Home Depot", hostname: "homedepot.com" },
         { name: "Lowe's", hostname: "lowes.com" },
-        { name: "Wayfair", hostname: "wayfair.com" },
-        { name: "Nordstrom", hostname: "nordstrom.com" },
-        { name: "Zappos", hostname: "zappos.com" },
         { name: "eBay", hostname: "ebay.com" },
         { name: "Staples", hostname: "staples.com" },
     ],
     India: [
-        { name: "Amazon (.in)", hostname: "amazon.in" },
+        { name: "Amazon", hostname: "amazon.in" },
         { name: "Flipkart", hostname: "flipkart.com" },
         { name: "Myntra", hostname: "myntra.com" },
         { name: "Zomato", hostname: "zomato.com" },
         { name: "Swiggy", hostname: "swiggy.com" },
         { name: "BigBasket", hostname: "bigbasket.com" },
-        { name: "Nykaa", hostname: "nykaa.com" },
         { name: "BookMyShow", hostname: "bookmyshow.com" },
     ],
     Canada: [
-        { name: "Amazon (.ca)", hostname: "amazon.ca" },
-        { name: "Best Buy (.ca)", hostname: "bestbuy.ca" },
+        { name: "Amazon", hostname: "amazon.ca" },
+        { name: "Best Buy", hostname: "bestbuy.ca" },
         { name: "Home Depot", hostname: "homedepot.ca" },
         { name: "DoorDash", hostname: "doordash.com" },
-        { name: "Uber Eats (.ca)", hostname: "ubereats.com/ca" },
-        { name: "Walmart (.ca)", hostname: "walmart.ca" },
-        { name: "Etsy (.ca)", hostname: "etsy.com/ca" },
-        { name: "Costco (.ca)", hostname: "costco.ca" },
+        { name: "Uber Eats", hostname: "ubereats.com/ca" },
+        { name: "Walmart", hostname: "walmart.ca" },
+        { name: "Etsy", hostname: "etsy.com/ca" },
+        { name: "Costco", hostname: "costco.ca" },
         { name: "Indigo", hostname: "indigo.ca" },
-        { name: "SportChek", hostname: "sportchek.ca" },
         { name: "Canadian Tire", hostname: "canadiantire.ca" },
         { name: "Hudson's Bay", hostname: "thebay.com" },
         { name: "Staples", hostname: "staples.ca" },
@@ -68,36 +63,54 @@ function populateWebsites(country) {
 
         supportedSites.forEach((site) => {
             const siteData = spendingData[site.hostname] || { limit: 9999999999999, current: 0 };
-
+        
             const websiteItem = document.createElement("div");
             websiteItem.className = "website-item";
-
+        
             const info = document.createElement("div");
             info.className = "info";
-            info.innerHTML = `
-                <span>${site.name}</span>
-                ${favourites.includes(site.hostname) ? `
-                <span>Spent: $${siteData.current.toFixed(2)} / Limit: $<input class="limit-input" type="number" value="${siteData.limit}" data-hostname="${site.hostname}" /></span>` 
-                : ""}
-            `;
-            websiteItem.appendChild(info);
-
+        
             if (favourites.includes(site.hostname)) {
+                // For favorited stores: full details
+                info.innerHTML = `
+                    <div class="flex-card">
+                        <div>
+                            <div class="fav-store-name">${site.name}</div>
+                            <span class="limit-display"><em>${site.hostname}</em></span>
+                        </div>
+                        <div class="limit-display">
+                            $${siteData.current.toFixed(2)} / $${siteData.limit.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+                
+                const actionsContainer = document.createElement("div");
+                actionsContainer.className = "limit-actions";
+        
+                // Input for limit editing
+                const limitInput = document.createElement("input");
+                limitInput.type = "number";
+                limitInput.className = "limit-input";
+                limitInput.value = siteData.limit;
+                actionsContainer.appendChild(limitInput);
+        
+                // Save button
                 const saveButton = document.createElement("button");
                 saveButton.className = "save-btn";
-                saveButton.textContent = "Save";
+                saveButton.textContent = "💾";
                 saveButton.addEventListener("click", () => {
-                    const newLimit = parseFloat(info.querySelector(".limit-input").value) || 0;
+                    const newLimit = parseFloat(limitInput.value) || 0;
                     spendingData[site.hostname] = { ...siteData, limit: newLimit };
                     chrome.storage.local.set({ spendingData }, () => {
                         alert(`${site.name} limit updated to $${newLimit}`);
                     });
                 });
-                websiteItem.appendChild(saveButton);
-
+                actionsContainer.appendChild(saveButton);
+        
+                // Remove button
                 const removeButton = document.createElement("button");
                 removeButton.className = "remove-btn";
-                removeButton.textContent = "Remove";
+                removeButton.textContent = "—";
                 removeButton.addEventListener("click", () => {
                     const index = favourites.indexOf(site.hostname);
                     if (index !== -1) {
@@ -109,13 +122,27 @@ function populateWebsites(country) {
                         });
                     }
                 });
-                websiteItem.appendChild(removeButton);
-
+                actionsContainer.appendChild(removeButton);
+        
+                info.appendChild(actionsContainer);
+                websiteItem.appendChild(info);
                 favouriteList.appendChild(websiteItem);
             } else {
+                // For hidden stores: name, hostname, and + button aligned
+                const flexContainer = document.createElement("div");
+                flexContainer.className = "flex-card";
+        
+                // Left section: Name and hostname
+                const textSection = document.createElement("div");
+                textSection.innerHTML = `
+                    <div class="fav-store-name">${site.name}</div>
+                    <span class="limit-display"><em>${site.hostname}</em></span>
+                `;
+        
+                // Right section: Add (+) button
                 const addButton = document.createElement("button");
                 addButton.className = "add-btn";
-                addButton.textContent = "Add";
+                addButton.textContent = "+";
                 addButton.addEventListener("click", () => {
                     favourites.push(site.hostname);
                     chrome.storage.local.set({ favourites }, () => {
@@ -123,7 +150,11 @@ function populateWebsites(country) {
                         populateWebsites(country);
                     });
                 });
-                websiteItem.appendChild(addButton);
+        
+                flexContainer.appendChild(textSection);
+                flexContainer.appendChild(addButton);
+        
+                websiteItem.appendChild(flexContainer);
                 otherList.appendChild(websiteItem);
             }
         });
@@ -146,15 +177,14 @@ document.addEventListener("DOMContentLoaded", () => {
         populateWebsites(selectedCountry);
     });
 
-    // Toggle dropdown visibility
     document.getElementById("toggle-dropdown").addEventListener("click", (e) => {
         const dropdown = document.getElementById("dropdown-list");
         if (dropdown.classList.contains("hidden")) {
             dropdown.classList.remove("hidden");
-            e.target.textContent = "Hide More Websites";
+            e.target.textContent = "Hide More Stores";
         } else {
             dropdown.classList.add("hidden");
-            e.target.textContent = "Show More Websites";
+            e.target.textContent = "Show More Stores";
         }
     });
 });

@@ -7,35 +7,34 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+    <select id="country-select" class="country-select">
+        <option value="USA">🇺🇸</option>
+        <option value="India">🇮🇳</option>
+        <option value="Canada">🇨🇦</option>
+    </select>
     <div class="container">
+        <header class = "popup-header">
+            <img src="icon.png" alt="PocketPause Logo" class="logo">
         <h1>PocketPause</h1>
+        </header>
         <p class="subtitle">Your friendly neighbourhood budgeting buddy</p>
-        
-        <div>
-            <label for="country-select">Select Country:</label>
-            <select id="country-select">
-                <option value="USA">USA</option>
-                <option value="India">India</option>
-                <option value="Canada">Canada</option>
-            </select>
-        </div>
 
         <div id="favourite-list">
-            <h2>Favourites</h2>
             <div id="favourites">
-                <!-- Favourite websites dynamically populated here -->
             </div>
         </div>
 
-        <button id="toggle-dropdown" class="dropdown-btn">Show More Websites</button>
-
-        <div id="dropdown-list" class="hidden">
-            <h2>Other Websites</h2>
+        <button id="toggle-dropdown" class="dropdown-btn">Show More Stores</button>
+        <div id="dropdown-list" class="hidden more-stores">
             <div id="others">
-                <!-- Non-favourite websites dynamically populated here -->
             </div>
         </div>
+
+        <footer class="footer">
+            <a href="https://www.github.com/RajveerSodhi" target="_blank" class="github-link">Developed by Rajveer Sodhi</a>
+        </footer>
     </div>
     <script src="popup.js"></script>
+
 </body>
 </html>

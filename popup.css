@@ -7,7 +7,7 @@ body {
 
 .container {
     padding: 20px;
-    width: 360px; /* Increased width for more spacious layout */
+    width: 420px;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -20,10 +20,41 @@ h1 {
     color: #444;
 }
 
+.popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.country-select {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 20px;
+    background-color: #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: none;
+}
+
+.add-stores-div {
+    padding: 8px;
+    background-color: #ddd;
+    border-radius: 8px;
+}
+
 .subtitle {
     font-size: 14px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: #666;
 }
 
@@ -36,9 +67,9 @@ h1 {
     justify-content: space-between;
     align-items: center;
     background-color: #fefefe;
-    padding: 10px;
+    padding: 16px 12px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 8px;
 }
 
@@ -48,8 +79,23 @@ h1 {
     gap: 5px;
 }
 
+.flex-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+}
+
+.limit-actions {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
 .limit-input {
-    width: 80px; /* Increased input width */
+    width: 80px;
     font-size: 14px;
     text-align: right;
     padding: 5px;
@@ -57,26 +103,70 @@ h1 {
     border-radius: 3px;
 }
 
+.limit-display {
+    font-size: 14px;
+    color: #666;
+}
+
 .save-btn, .add-btn, .remove-btn {
-    font-size: 12px;
-    color: #007bff;
+    font-size: 14px;
+    background-color: #ddd;
+    border-radius: 50%;
     border: none;
-    background: none;
+    height: 30px;
+    width: 30px;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none;
+    transition: transform 0.3s ease-in-out;
+}
+
+.save-btn:hover, .add-btn:hover, .remove-btn:hover {
+    transform: scale(1.1);
+}
+
+.fav-store-name {
+    font-size: 18px;
 }
 
 .dropdown-btn {
     font-size: 14px;
-    color: #fff;
-    background: #007bff;
-    padding: 8px;
-    border: none;
-    border-radius: 8px;
+    color: #000;
+    background: #fff;
+    padding: 12px;
+    border: #ddd 1px solid;
+    border-radius: 25px;
     cursor: pointer;
     width: 100%;
+    transition: background 0.3s ease-in-out;
+}
+
+.dropdown-btn:hover {
+    background: #ddd;
+}
+
+.more-stores {
+    display: block;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #ddd;
+    border-radius: 16px;
 }
 
 .hidden {
     display: none;
+}
+
+.footer {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.github-link {
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.github-link:hover {
+    text-decoration: underline;
 }
