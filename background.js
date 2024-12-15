@@ -69,32 +69,38 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 });
 
-// Function to reset daily spending
-const resetDailySpending = () => {
-    chrome.storage.local.get(["spendingData", "lastResetTime"], (result) => {
-        const currentTime = Date.now();
-        const resetInterval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-        const lastResetTime = result.lastResetTime || 0;
-
-        // Check if 24 hours have passed since the last reset
-        if (currentTime - lastResetTime >= resetInterval) {
-            const updatedData = result.spendingData || {};
-            Object.keys(updatedData).forEach((site) => {
-                updatedData[site].current = 0; // Reset current spending
-            });
-
-            chrome.storage.local.set({
-                spendingData: updatedData,
-                lastResetTime: currentTime // Update the last reset time
-            }, () => {
-                console.log("Daily spending has been reset:", updatedData);
-            });
-        }
-    });
+// Function to calculate time remaining until the next midnight
+const getTimeUntilMidnight = () => {
+    const now = new Date();
+    const nextMidnight = new Date();
+    nextMidnight.setDate(now.getDate() + 1); // Go to the next day
+    nextMidnight.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    return nextMidnight - now; // Difference in milliseconds
 };
 
-// Schedule daily reset
-setInterval(resetDailySpending, 60 * 60 * 1000); // Check every hour
+// Function to reset daily spending at midnight
+const resetSpendingAtMidnight = () => {
+    chrome.storage.local.get(["spendingData"], (result) => {
+        const spendingData = result.spendingData || {};
+        Object.keys(spendingData).forEach((site) => {
+            spendingData[site].current = 0; // Reset current spending to 0
+        });
+
+        chrome.storage.local.set({ spendingData }, () => {
+            console.log("Spending data has been reset at midnight:", spendingData);
+        });
+    });
+
+    // Schedule the next reset at the next midnight
+    const timeUntilNextMidnight = getTimeUntilMidnight();
+    setTimeout(resetSpendingAtMidnight, timeUntilNextMidnight);
+};
+
+// Schedule the first reset at midnight
+const timeUntilMidnight = getTimeUntilMidnight();
+setTimeout(resetSpendingAtMidnight, timeUntilMidnight);
+
+console.log(`Next spending reset scheduled in ${Math.round(timeUntilMidnight / 1000 / 60)} minutes.`);
 
 // Track spending when purchases are made
 chrome.runtime.onMessage.addListener((message, sender) => {
@@ -195,6 +201,3 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         });
     }
 });
-
-// Reset spending data regularly
-resetDailySpending(); // Ensure a reset happens when the extension starts
