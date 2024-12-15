@@ -71,7 +71,6 @@ function populateWebsites(country) {
             info.className = "info";
         
             if (favourites.includes(site.hostname)) {
-                // For favorited stores: full details
                 info.innerHTML = `
                     <div class="flex-card">
                         <div>
@@ -79,20 +78,24 @@ function populateWebsites(country) {
                             <span class="limit-display"><em>${site.hostname}</em></span>
                         </div>
                         <div class="limit-display">
-                            $${siteData.current.toFixed(2)} / $${siteData.limit.toFixed(2)}
+                            $${Math.round(siteData.current)} / ${siteData.limit === 9999999999999 ? '' : `$${Math.round(siteData.limit)}`}
                         </div>
                     </div>
                 `;
-                
+        
                 const actionsContainer = document.createElement("div");
-                actionsContainer.className = "limit-actions";
+                actionsContainer.className = "limit-actions"; // Use flexbox for space-between
+        
+                // Container for limit input and save button
+                const inputSaveContainer = document.createElement("div");
+                inputSaveContainer.className = "input-save-container";
         
                 // Input for limit editing
                 const limitInput = document.createElement("input");
                 limitInput.type = "number";
                 limitInput.className = "limit-input";
-                limitInput.value = siteData.limit;
-                actionsContainer.appendChild(limitInput);
+                limitInput.placeholder = "Enter limit";
+                limitInput.value = siteData.limit === 9999999999999 ? "" : siteData.limit;
         
                 // Save button
                 const saveButton = document.createElement("button");
@@ -105,7 +108,9 @@ function populateWebsites(country) {
                         alert(`${site.name} limit updated to $${newLimit}`);
                     });
                 });
-                actionsContainer.appendChild(saveButton);
+        
+                inputSaveContainer.appendChild(limitInput);
+                inputSaveContainer.appendChild(saveButton);
         
                 // Remove button
                 const removeButton = document.createElement("button");
@@ -122,24 +127,25 @@ function populateWebsites(country) {
                         });
                     }
                 });
+        
+                // Append both containers to actionsContainer
+                actionsContainer.appendChild(inputSaveContainer);
                 actionsContainer.appendChild(removeButton);
         
                 info.appendChild(actionsContainer);
                 websiteItem.appendChild(info);
                 favouriteList.appendChild(websiteItem);
             } else {
-                // For hidden stores: name, hostname, and + button aligned
+                // Hidden stores layout
                 const flexContainer = document.createElement("div");
                 flexContainer.className = "flex-card";
         
-                // Left section: Name and hostname
                 const textSection = document.createElement("div");
                 textSection.innerHTML = `
                     <div class="fav-store-name">${site.name}</div>
                     <span class="limit-display"><em>${site.hostname}</em></span>
                 `;
         
-                // Right section: Add (+) button
                 const addButton = document.createElement("button");
                 addButton.className = "add-btn";
                 addButton.textContent = "+";

@@ -7,7 +7,7 @@ body {
 
 .container {
     padding: 20px;
-    width: 420px;
+    width: 430px;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -25,6 +25,7 @@ h1 {
     align-items: center;
     justify-content: center;
     margin-bottom: 15px;
+    margin-top: 10px;
 }
 
 .logo {
@@ -79,6 +80,10 @@ h1 {
     gap: 5px;
 }
 
+.info {
+    width: 100%;
+}
+
 .flex-card {
     display: flex;
     justify-content: space-between;
@@ -89,16 +94,18 @@ h1 {
 
 .limit-actions {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
+    margin-top: 10px;
     gap: 10px;
 }
 
 .limit-input {
-    width: 80px;
+    width: 100px;
     font-size: 14px;
     text-align: right;
     padding: 5px;
+    margin-right: 10px;
     border: 1px solid #ddd;
     border-radius: 3px;
 }
